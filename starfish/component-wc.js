@@ -3,23 +3,25 @@ import { fetchComponent } from "./index.js";
 class Component extends HTMLElement {
 	constructor() {
 		super();
-		this.dispatchEvent(new CustomEvent('loaded'))
 
 		setTimeout(async () => {
-			if (!this.hasAttribute("path"))
-				throw new Error("`path` attribute required in <component> tags!");
+			const src = this.getAttribute("path");
+			const name = this.getAttribute("name");
 
-			if (!this.hasAttribute("name"))
-				throw new Error("`name` attribute required in <component> tags!");
+			if (!name)
+				throw new Error(`[loading ${src}] \`name\` attribute required in <component> tags!`);
+
+			if (!src)
+				throw new Error(
+					`[loading ${name}] \`src\` attribute required in <component> tags!`
+				);
+
 			this.attachShadow({ mode: "open" });
 
-			const fragment = await fetchComponent(
-				this.getAttribute("path"),
-				this.getAttribute("name")
-			);
-			
+			const fragment = await fetchComponent(src, name);
+
 			this.shadowRoot.appendChild(fragment);
-		}, 1);
+		}, 0);
 	}
 }
 
