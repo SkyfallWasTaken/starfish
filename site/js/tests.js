@@ -1,5 +1,5 @@
-import init from "../starfish/index.js";
-import testList from "../starfish/tests/testList.js";
+import init from "../../src/index.js";
+import testList from "../../src/tests/testList.js";
 
 await init("/src/components/tests/App.html", "App");
 

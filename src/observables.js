@@ -3,22 +3,33 @@
 class ObservableListener {
 	#callback;
 	#observable;
+	#removeListener
 
-	constructor(callback, hash, observable) {
+	constructor(callback, hash, observable, removeListener) {
 		this.hash = hash;
 		this.#callback = callback;
 		this.#observable = observable;
+		this.#removeListener = removeListener
 	}
 
+	/**
+	 * Calls the callback for the class.
+	 */
 	call() {
 		this.#callback(this.#observable.value);
 	}
 
+	/**
+	 * Unsubscribes the listener from the observable.
+	 */
 	unsubscribe() {
-		this.#observable.removeListener(this.hash);
+		this.#removeListener(this.hash);
 	}
 }
 
+/**
+ * A basic observable.
+ */
 export default class Observable {
 	#listeners;
 	#listenerHashes;
@@ -30,18 +41,21 @@ export default class Observable {
 		this.#value = value;
 	}
 
-	async subscribe(cb) {
+	/**
+	 * @param cb {function} The callback, which will be called when the `Observable` value is changed.
+	 */
+	subscribe(cb) {
 		const hash = Math.random()
 			.toString(36)
 			.replace(/[^a-z]+/g, "")
 			.substring(6);
 		this.#listenerHashes.push(hash);
-		const listener = new ObservableListener(cb, hash, this);
+		const listener = new ObservableListener(cb, hash, this, this.#removeListener);
 		this.#listeners.push(listener);
 		return listener;
 	}
 
-	removeListener(hash) {
+	#removeListener(hash) {
 		delete this.#listeners[this.#listenerHashes.indexOf(hash)];
 	}
 

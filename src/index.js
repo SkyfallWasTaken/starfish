@@ -1,6 +1,17 @@
 const parser = new DOMParser();
 import "./component-wc.js";
 
+const Eta = window["Eta"];
+if (!Eta) throw new Error("Eta.js not found, please include it and try again.");
+Eta.configure({
+	cache: true,
+	tags: ["{{", "}}"],
+});
+
+/**
+ * @param path {string} The path to the component.
+ * @param name {string} The name of the component, used for debugging purposes.
+ */
 export async function fetchComponent(path, name) {
 	const response = await fetch(path);
 	if (response.status != 200)
@@ -10,13 +21,15 @@ export async function fetchComponent(path, name) {
 
 	const text = await response.text();
 	const template = parser.parseFromString(
-		`
+		Eta.render(
+			`
 			<template>
-				<div starfish-component="${name.replace('"', '\\"')}">
+				<div name="${name}">
 					${text}
 				</div>
 			</template>
-		`,
+			`
+		),
 		"text/html"
 	);
 
@@ -45,6 +58,9 @@ export async function fetchComponent(path, name) {
 	return fragment;
 }
 
+/**
+ * @param app {string} The path to your app component.
+ */
 export default async function init(app) {
 	const fragment = await fetchComponent(app, "App");
 	document.body.appendChild(fragment);

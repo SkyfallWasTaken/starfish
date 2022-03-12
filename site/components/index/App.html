@@ -1,0 +1,17 @@
+<component src="./components/Base.html" name="base">
+  <h1 id="intro" class="centre">Starfish is a tiny framework for creating web apps.</h1>
+  <p class="centre">Forget about hassling with build steps or verbose syntax. Simplify your life.</p>
+  
+  {{
+    import Observable from "../../../src/observables.js"
+    const count = new Observable(0)
+  }}
+  
+  <button onclick="count.value++" id="counter">{{=count.value}}</button>
+</component>
+
+<style>
+  .centre {
+    text-align: center;
+  }
+</style>
